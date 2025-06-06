@@ -1,0 +1,28 @@
+<!-- views/admin.ejs -->
+<!DOCTYPE html>
+<html lang="es">
+  <%- include('partials/head') %>
+  <%- include('partials/header') %>
+
+  <section>
+    <h2>Panel de Administración</h2>
+    <p>Bienvenido <strong><%= name %></strong></p>
+    <p>Rol: <%= rol %></p>
+
+    <% if (rol === "admin") { %>
+      <h3>📊 Información exclusiva para administradores:</h3>
+      <ul>
+        <li>Total de usuarios registrados</li>
+        <li>Estadísticas del sistema</li>
+        <li>Acceso a gestión de usuarios</li>
+        <li>Botón para mantenimiento</li>
+      </ul>
+    <% } else { %>
+      <p>No tienes permisos para ver datos administrativos.</p>
+    <% } %>
+
+    <a href="/logout">Cerrar sesión</a>
+  </section>
+
+  <%- include('partials/footer') %>
+</html>

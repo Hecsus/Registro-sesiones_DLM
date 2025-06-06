@@ -1,0 +1,38 @@
+<!-- views/register.ejs -->
+<!DOCTYPE html>
+<html lang="es">
+  <%- include('partials/head') %>
+  <%- include('partials/header') %>
+
+  <section>
+    <h2>Formulario de Registro</h2>
+    <form action="/register" method="POST">
+      <input type="text" name="user" placeholder="Usuario" required />
+      <input type="text" name="name" placeholder="Nombre completo" required />
+      <select name="rol" required>
+        <option value="editor">Editor</option>
+        <option value="admin">Administrador</option>
+      </select>
+      <input type="password" name="pass" placeholder="Contraseña" required />
+      <button type="submit">Registrarse</button>
+    </form>
+    <a href="/login">¿Ya tienes cuenta? Inicia sesión</a>
+  </section>
+
+  <% if (alert) { %>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      Swal.fire({
+        title: "<%= alertTitle %>",
+        text: "<%= alertMessage %>",
+        icon: "<%= alertIcon %>",
+        showConfirmButton: <%= showConfirmButton %>,
+        timer: <%= timer %>,
+      }).then(() => {
+        window.location = "/<%= ruta %>";
+      });
+    </script>
+  <% } %>
+
+  <%- include('partials/footer') %>
+</html>

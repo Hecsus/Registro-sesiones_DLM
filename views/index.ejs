@@ -1,0 +1,21 @@
+<!-- views/index.ejs -->
+<!DOCTYPE html>
+<html lang="es">
+  <%- include('partials/head') %>
+  <%- include('partials/header') %>
+
+  <section>
+    <h2>Bienvenido</h2>
+    <% if (login) { %>
+      <p>Hola <%= name %> 👋</p>
+      <a href="/admin">Ir al panel</a>
+      <a href="/logout">Cerrar sesión</a>
+    <% } else { %>
+      <p>Debes iniciar sesión para acceder al sistema</p>
+      <a href="/login">Iniciar sesión</a>
+      <a href="/registro">Crear cuenta</a>
+    <% } %>
+  </section>
+
+  <%- include('partials/footer') %>
+</html>
