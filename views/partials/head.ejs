@@ -1,8 +1,28 @@
 <!-- partials/head.ejs -->
-<!-- Etiqueta de apertura del head -->
-<!-- views/partials/head.ejs -->
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registro de Sesiones DLM</title>
+<!-- Cabecera HTML común para todas las vistas -->
+
+<head> <!-- Apertura del head -->
+  <meta charset="UTF-8" /> <!-- Codificación de caracteres -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Diseño responsive -->
+  
+  <!-- Título dinámico: si la vista no define "title", se usa "Mi sitio" por defecto -->
+  <title><%= title || "Mi sitio" %></title>
+
+  <!-- CSS propio del proyecto (ubicado en /public/css/style.css) -->
   <link rel="stylesheet" href="/resources/css/style.css" />
+
+  <!-- CDN de Bootstrap 5 para estilos modernos y responsive -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Tooltip + Validaciones Bootstrap + estilos -->
+<style>
+  .form-text {
+    display: none;
+    font-size: 0.9em;
+    color: #6c757d;
+  }
+  input:focus + .form-text,
+  select:focus + .form-text {
+    display: block;
+  }
+</style>

@@ -1,38 +1,130 @@
-<!-- views/register.ejs -->
 <!DOCTYPE html>
 <html lang="es">
   <%- include('partials/head') %>
-  <%- include('partials/header') %>
+  <body>
+    <%- include('partials/header') %>
 
-  <section>
-    <h2>Formulario de Registro</h2>
-    <form action="/register" method="POST">
-      <input type="text" name="user" placeholder="Usuario" required />
-      <input type="text" name="name" placeholder="Nombre completo" required />
-      <select name="rol" required>
-        <option value="editor">Editor</option>
-        <option value="admin">Administrador</option>
-      </select>
-      <input type="password" name="pass" placeholder="Contraseña" required />
-      <button type="submit">Registrarse</button>
-    </form>
-    <a href="/login">¿Ya tienes cuenta? Inicia sesión</a>
-  </section>
+    <section class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+          <h2 class="text-center mb-4">Registro</h2>
 
-  <% if (alert) { %>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+          <!-- 📄 Formulario de registro -->
+          <form action="/register" method="POST" novalidate>
+            <!-- 🧑 Usuario -->
+            <div class="mb-3">
+              <input
+                type="text"
+                name="user"
+                placeholder="Usuario"
+                value="<%= oldData?.user || '' %>"
+                minlength="3"
+                pattern="[a-zA-Z0-9]+"
+                title="Debe tener al menos 3 caracteres alfanuméricos"
+                class="form-control <%= errors.find(e => e.param === 'user') ? 'is-invalid' : '' %>"
+                required
+              />
+              <div class="form-text">Debe tener al menos 3 caracteres alfanuméricos</div>
+              <% errors.forEach(e => { if (e.param === 'user') { %>
+                <div class="invalid-feedback d-block"><%= e.msg %></div>
+              <% }}) %>
+            </div>
+
+            <!-- 🧾 Nombre -->
+            <div class="mb-3">
+              <input
+                type="text"
+                name="name"
+                placeholder="Nombre completo"
+                value="<%= oldData?.name || '' %>"
+                minlength="3"
+                pattern="[a-zA-ZÀ-ÿ\s]+" 
+                title="Debe tener al menos 3 letras (solo letras)"
+                class="form-control <%= errors.find(e => e.param === 'name') ? 'is-invalid' : '' %>"
+                required
+              />
+              <div class="form-text">Debe tener al menos 3 letras (sin símbolos)</div>
+              <% errors.forEach(e => { if (e.param === 'name') { %>
+                <div class="invalid-feedback d-block"><%= e.msg %></div>
+              <% }}) %>
+            </div>
+
+            <!-- 🧑‍💼 Rol -->
+            <div class="mb-3">
+              <select
+                name="rol"
+                class="form-select <%= errors.find(e => e.param === 'rol') ? 'is-invalid' : '' %>"
+                required
+              >
+                <option value="" disabled <%= oldData?.rol ? '' : 'selected' %>>Selecciona un rol</option>
+                <option value="editor" <%= oldData?.rol === "editor" ? "selected" : "" %>>Editor</option>
+                <option value="admin" <%= oldData?.rol === "admin" ? "selected" : "" %>>Administrador</option>
+              </select>
+              <div class="form-text">Debes seleccionar un rol válido</div>
+              <% errors.forEach(e => { if (e.param === 'rol') { %>
+                <div class="invalid-feedback d-block"><%= e.msg %></div>
+              <% }}) %>
+            </div>
+
+            <!-- 🔐 Contraseña -->
+            <div class="mb-3">
+              <input
+                type="password"
+                name="pass"
+                placeholder="Contraseña"
+                minlength="5"
+                pattern="[a-zA-Z0-9]+"
+                title="Debe tener al menos 5 caracteres alfanuméricos"
+                class="form-control <%= errors.find(e => e.param === 'pass') ? 'is-invalid' : '' %>"
+                required
+              />
+              <div class="form-text">Debe tener al menos 5 caracteres alfanuméricos</div>
+              <% errors.forEach(e => { if (e.param === 'pass') { %>
+                <div class="invalid-feedback d-block"><%= e.msg %></div>
+              <% }}) %>
+            </div>
+
+            <!-- Botón enviar -->
+            <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+          </form>
+
+          <div class="text-center mt-3">
+            <a href="/login">¿Ya tienes cuenta? Inicia sesión</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SweetAlert para alertas -->
+    <% if (alert) { %>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script>
+        Swal.fire({
+          title: "<%= alertTitle %>",
+          text: "<%= alertMessage %>",
+          icon: "<%= alertIcon %>",
+          showConfirmButton: <%= showConfirmButton %>,
+          timer: <%= timer %>,
+        }).then(() => {
+          window.location = "/<%= ruta %>";
+        });
+      </script>
+    <% } %>
+
+    <%- include('partials/footer') %>
+
+    <!-- ✅ Validación interactiva -->
     <script>
-      Swal.fire({
-        title: "<%= alertTitle %>",
-        text: "<%= alertMessage %>",
-        icon: "<%= alertIcon %>",
-        showConfirmButton: <%= showConfirmButton %>,
-        timer: <%= timer %>,
-      }).then(() => {
-        window.location = "/<%= ruta %>";
+      document.querySelectorAll("input, select").forEach(input => {
+        input.addEventListener("input", () => {
+          input.setCustomValidity("");
+          if (!input.checkValidity()) {
+            input.classList.add("is-invalid");
+          } else {
+            input.classList.remove("is-invalid");
+          }
+        });
       });
     </script>
-  <% } %>
-
-  <%- include('partials/footer') %>
+  </body>
 </html>

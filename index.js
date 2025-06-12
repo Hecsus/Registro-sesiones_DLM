@@ -1,160 +1,68 @@
 // ----------------------------
 // 🔌 IMPORTAR MÓDULOS
 // ----------------------------
-const express = require("express");
-const session = require("express-session");
-const bcrypt = require("bcryptjs");
-const dotenv = require("dotenv");
-const db = require("./database/db");
+const express = require("express"); // Framework web de Node.js
+const session = require("express-session"); // Middleware para manejar sesiones
+const bcrypt = require("bcryptjs"); // Para encriptar contraseñas
+const dotenv = require("dotenv"); // Cargar variables del archivo .env
+const db = require("./database/db"); // Archivo con la conexión a la base de datos
+const path = require("path"); // Para manejar rutas absolutas
 
 // Cargar variables del archivo .env
-dotenv.config({ path: "./env/.env" });
+dotenv.config({ path: "./env/.env" }); // Cargamos variables del archivo .env
 
 // Inicializar app
-const app = express();
+const app = express(); // Creamos la app con Express
 
 // ----------------------------
 // ⚙️ CONFIGURACIONES
 // ----------------------------
 
-// Motor de plantillas EJS
+// Configuración de EJS como motor de plantillas
 app.set("view engine", "ejs");
 
-// Archivos estáticos
+// Configuración para archivos estáticos (CSS, imágenes, etc.)
 app.use("/resources", express.static(__dirname + "/public"));
 
-// Middleware para parseo de formularios
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+// Middleware para recibir datos de formularios
+app.use(express.urlencoded({ extended: false })); // Para procesar formularios
+app.use(express.json()); // Para aceptar datos JSON (ej. APIs)
 
 // Middleware de sesión
 app.use(
   session({
-    secret: "secreto_super_seguro",
-    resave: false,
-    saveUninitialized: false,
+    secret: "secreto_super_seguro", // Clave para firmar la sesión
+    resave: false, // No guarda la sesión si no hay cambios
+    saveUninitialized: false, // Evita crear sesión vacía
   })
 );
 
 // Middleware global → todas las vistas tendrán `login` disponible automáticamente
 app.use((req, res, next) => {
-  res.locals.login = req.session.loggedin || false;
+  res.locals.login = req.session.loggedin || false; // `login` disponible en todas las vistas
+  next(); // Continuamos con el siguiente middleware o ruta
+});
+
+// Middleware para definir un título por defecto si no se pasa desde la vista
+app.use((req, res, next) => {
+  res.locals.title = "Mi sitio"; // Título por defecto
   next();
 });
 
 // ----------------------------
-// 🌐 RUTAS
+// 🌐 RUTAS PRINCIPALES
 // ----------------------------
 
-// Página principal
+// Página de inicio
 app.get("/", (req, res) => {
   res.render("index", {
     name: req.session.name || "Visitante",
+    title: "Inicio" // ← 🆕 Título para <head>
   });
 });
 
-// Página de registro (GET)
-app.get("/registro", (req, res) => {
-  res.render("register", { alert: false });
-});
-
-// Registro de usuario (POST)
-app.post("/register", async (req, res) => {
-  const { user, name, rol, pass } = req.body;
-  const hash = await bcrypt.hash(pass, 8);
-
-  db.query(
-    "INSERT INTO usuarios SET ?",
-    { usuario: user, nombre: name, rol, pass: hash },
-    (err) => {
-      if (err) return console.error("❌ Error al registrar:", err);
-
-      res.render("register", {
-        alert: true,
-        alertTitle: "Registrado",
-        alertMessage: "Usuario creado con éxito",
-        alertIcon: "success",
-        showConfirmButton: false,
-        timer: 1500,
-        ruta: "login",
-      });
-    }
-  );
-});
-
-// Página de login (GET)
-app.get("/login", (req, res) => {
-  res.render("login", { alert: false });
-});
-
-// Login de usuario (POST)
-app.post("/auth", async (req, res) => {
-  const { user, pass } = req.body;
-
-  if (!user || !pass) {
-    return res.render("login", {
-      alert: true,
-      alertTitle: "Campos vacíos",
-      alertMessage: "Introduce usuario y contraseña",
-      alertIcon: "warning",
-      showConfirmButton: true,
-      timer: false,
-      ruta: "login",
-    });
-  }
-
-  db.query(
-    "SELECT * FROM usuarios WHERE usuario = ?",
-    [user],
-    async (err, results) => {
-      if (
-        results.length === 0 ||
-        !(await bcrypt.compare(pass, results[0].pass))
-      ) {
-        return res.render("login", {
-          alert: true,
-          alertTitle: "Error",
-          alertMessage: "Credenciales incorrectas",
-          alertIcon: "error",
-          showConfirmButton: true,
-          timer: false,
-          ruta: "login",
-        });
-      }
-
-      req.session.loggedin = true;
-      req.session.name = results[0].nombre;
-      req.session.rol = results[0].rol;
-
-      res.render("login", {
-        alert: true,
-        alertTitle: "Bienvenido",
-        alertMessage: "Inicio de sesión correcto",
-        alertIcon: "success",
-        showConfirmButton: false,
-        timer: 1000,
-        ruta: "admin",
-      });
-    }
-  );
-});
-
-// Panel de administrador
-app.get("/admin", (req, res) => {
-  if (!req.session.loggedin) return res.redirect("/login");
-
-  res.render("admin", {
-    name: req.session.name,
-    rol: req.session.rol,
-  });
-});
-
-// Cierre de sesión
-app.get("/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.redirect("/");
-  });
-});
+// Rutas de autenticación y administración
+app.use("/", require("./routes/auth"));
 
 // ----------------------------
 // 🚀 ARRANCAR SERVIDOR

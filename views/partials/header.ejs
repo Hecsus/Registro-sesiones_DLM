@@ -1,7 +1,29 @@
 <!-- partials/header.ejs -->
-<!-- Aquí cerramos el head, abrimos el body y empezamos el encabezado -->
+
+<!-- Cerramos el <head> aquí según indicación del profesor -->
 </head>
-<!-- views/partials/header.ejs -->
-<header>
-  <h1>Registro de Sesiones DLM</h1>
+
+<!-- Cabecera del sitio: visible en todas las páginas -->
+<header class="bg-dark text-white p-3 mb-4">
+  <div class="container">
+    <h1 class="h3">Registro-Sesiones</h1> <!-- Título de la app -->
+
+    <!-- Menú de navegación -->
+    <nav>
+      <ul class="nav">
+        <li class="nav-item"><a href="/" class="nav-link text-white">Inicio</a></li>
+
+        <!-- Si no ha iniciado sesión -->
+        <% if (!login) { %>
+          <li class="nav-item"><a href="/login" class="nav-link text-white">Login</a></li>
+          <li class="nav-item"><a href="/registro" class="nav-link text-white">Registro</a></li>
+
+        <!-- Si ha iniciado sesión -->
+        <% } else { %>
+          <li class="nav-item"><a href="/admin" class="nav-link text-white">Panel</a></li>
+          <li class="nav-item"><a href="/logout" class="nav-link text-white">Cerrar sesión</a></li>
+        <% } %>
+      </ul>
+    </nav>
+  </div>
 </header>

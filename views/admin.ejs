@@ -1,28 +1,64 @@
 <!-- views/admin.ejs -->
 <!DOCTYPE html>
 <html lang="es">
+  <!-- Head -->
   <%- include('partials/head') %>
+
+  <!-- Header -->
   <%- include('partials/header') %>
 
-  <section>
+  <section class="container">
     <h2>Panel de Administración</h2>
     <p>Bienvenido <strong><%= name %></strong></p>
     <p>Rol: <%= rol %></p>
 
-    <% if (rol === "admin") { %>
-      <h3>📊 Información exclusiva para administradores:</h3>
-      <ul>
-        <li>Total de usuarios registrados</li>
-        <li>Estadísticas del sistema</li>
-        <li>Acceso a gestión de usuarios</li>
-        <li>Botón para mantenimiento</li>
-      </ul>
-    <% } else { %>
-      <p>No tienes permisos para ver datos administrativos.</p>
+    <!-- ⚠️ Si hay error -->
+    <% if (errorMsg) { %>
+      <p class="text-danger"><%= errorMsg %></p>
     <% } %>
 
-    <a href="/logout">Cerrar sesión</a>
+    <!-- 📋 Lista de productos -->
+    <h3 class="mt-4">📦 Productos disponibles</h3>
+    <table class="table table-bordered table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Ref</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <% if (rol === "admin") { %>
+            <th>Acciones</th>
+          <% } %>
+        </tr>
+      </thead>
+      <tbody>
+        <% productos.forEach(p => { %>
+          <tr>
+            <td><%= p.ref %></td>
+            <td><%= p.nombre %></td>
+            <td><%= p.precio %> €</td>
+            <td><%= p.stock %></td>
+            <% if (rol === "admin") { %>
+              <td>
+                <a href="/editar-producto/<%= p.ref %>" class="btn btn-warning btn-sm">Editar</a>
+                <a href="/borrar-producto/<%= p.ref %>" class="btn btn-danger btn-sm">Borrar</a>
+              </td>
+            <% } %>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <!-- 🆕 Botón para añadir producto (solo admins) -->
+    <% if (rol === "admin") { %>
+      <a href="/nuevo-producto" class="btn btn-success mt-3">➕ Añadir nuevo producto</a>
+    <% } %>
+
+    <!-- Cerrar sesión -->
+    <a href="/logout" class="btn btn-outline-secondary mt-4 d-block">Cerrar sesión</a>
   </section>
 
+  <!-- Footer -->
   <%- include('partials/footer') %>
+  </body>
 </html>

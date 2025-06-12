@@ -1,21 +1,11 @@
-<!-- views/index.ejs -->
-<!DOCTYPE html>
-<html lang="es">
-  <%- include('partials/head') %>
+<%- include('partials/head') %>
+<body>
   <%- include('partials/header') %>
 
-  <section>
-    <h2>Bienvenido</h2>
-    <% if (login) { %>
-      <p>Hola <%= name %> 👋</p>
-      <a href="/admin">Ir al panel</a>
-      <a href="/logout">Cerrar sesión</a>
-    <% } else { %>
-      <p>Debes iniciar sesión para acceder al sistema</p>
-      <a href="/login">Iniciar sesión</a>
-      <a href="/registro">Crear cuenta</a>
-    <% } %>
-  </section>
+  <main class="container">
+    <h2>Bienvenido <%= name %></h2>
+    <p>Esta es la página principal.</p>
+  </main>
 
   <%- include('partials/footer') %>
-</html>
+</body>

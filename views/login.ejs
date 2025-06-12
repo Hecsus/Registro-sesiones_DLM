@@ -1,33 +1,99 @@
-<!-- views/login.ejs -->
 <!DOCTYPE html>
 <html lang="es">
+  <!-- 💡 Head con Bootstrap, estilos y título dinámico -->
   <%- include('partials/head') %>
-  <%- include('partials/header') %>
 
-  <section>
-    <h2>Iniciar Sesión</h2>
-    <form action="/auth" method="POST">
-      <input type="text" name="user" placeholder="Usuario" required />
-      <input type="password" name="pass" placeholder="Contraseña" required />
-      <button type="submit">Entrar</button>
-    </form>
-    <a href="/registro">¿No tienes cuenta? Regístrate</a>
-  </section>
+  <body>
+    <!-- 🧭 Barra de navegación -->
+    <%- include('partials/header') %>
 
-  <% if (alert) { %>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <section class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+          <h2 class="text-center mb-4">Iniciar Sesión</h2>
+
+          <!-- 🔐 Formulario de autenticación -->
+          <form action="/auth" method="POST" novalidate>
+            <!-- 📛 Campo: Usuario -->
+            <div class="mb-3">
+              <input
+                type="text"
+                name="user"
+                placeholder="Usuario"
+                value="<%= oldData?.user || '' %>"
+                class="form-control <%= errors.find(e => e.param === 'user') ? 'is-invalid' : '' %>"
+                minlength="3"
+                pattern="[a-zA-Z0-9]+"
+                title="Debe tener al menos 3 caracteres alfanuméricos"
+                required
+              />
+              <div class="form-text">Debe tener al menos 3 caracteres alfanuméricos</div>
+              <% errors.forEach(e => { if (e.param === 'user') { %>
+                <div class="invalid-feedback d-block"><%= e.msg %></div>
+              <% }}) %>
+            </div>
+
+            <!-- 🔒 Campo: Contraseña -->
+            <div class="mb-3">
+              <input
+                type="password"
+                name="pass"
+                placeholder="Contraseña"
+                class="form-control <%= errors.find(e => e.param === 'pass') ? 'is-invalid' : '' %>"
+                minlength="5"
+                pattern="[a-zA-Z0-9]+"
+                title="Debe tener al menos 5 caracteres alfanuméricos"
+                required
+              />
+              <div class="form-text">Debe tener al menos 5 caracteres alfanuméricos</div>
+              <% errors.forEach(e => { if (e.param === 'pass') { %>
+                <div class="invalid-feedback d-block"><%= e.msg %></div>
+              <% }}) %>
+            </div>
+
+            <!-- 🔘 Botón de enviar -->
+            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+          </form>
+
+          <!-- 🔁 Enlace para ir a registro -->
+          <div class="text-center mt-3">
+            <a href="/registro">¿No tienes cuenta? Regístrate</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 📢 SweetAlert si hay alertas -->
+    <% if (alert) { %>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script>
+        Swal.fire({
+          title: "<%= alertTitle %>",
+          text: "<%= alertMessage %>",
+          icon: "<%= alertIcon %>",
+          showConfirmButton: <%= showConfirmButton %>,
+          timer: <%= timer %>,
+        }).then(() => {
+          window.location = "/<%= ruta %>";
+        });
+      </script>
+    <% } %>
+
+    <!-- 📦 Footer -->
+    <%- include('partials/footer') %>
+
+    <!-- ✔️ Validación de campos en tiempo real -->
     <script>
-      Swal.fire({
-        title: "<%= alertTitle %>",
-        text: "<%= alertMessage %>",
-        icon: "<%= alertIcon %>",
-        showConfirmButton: <%= showConfirmButton %>,
-        timer: <%= timer %>,
-      }).then(() => {
-        window.location = "/<%= ruta %>";
+      document.querySelectorAll("input").forEach(input => {
+        input.addEventListener("input", () => {
+          input.setCustomValidity("");
+          if (!input.checkValidity()) {
+            input.classList.add("is-invalid");
+          } else {
+            input.classList.remove("is-invalid");
+          }
+        });
       });
     </script>
-  <% } %>
-
-  <%- include('partials/footer') %>
+  </body>
 </html>
