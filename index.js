@@ -64,6 +64,8 @@ app.get("/", (req, res) => {
 // Rutas de autenticación y administración
 app.use("/", require("./routes/auth"));
 
+
+
 // ----------------------------
 // 🚀 ARRANCAR SERVIDOR
 // ----------------------------

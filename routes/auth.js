@@ -202,5 +202,12 @@ router.get("/logout", (req, res) => {
   });
 });
 
+// -------------------------------------
+// 🧩 Importar rutas de productos y montarlas aquí directamente
+// -------------------------------------
+const productosRoutes = require("./productos"); // cargamos las rutas
+router.use(productosRoutes); // montamos sus rutas dentro de este router
+
 // Exportamos el router para usarlo en `index.js`
 module.exports = router;
+
